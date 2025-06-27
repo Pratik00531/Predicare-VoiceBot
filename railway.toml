@@ -1,0 +1,13 @@
+# Railway Deployment Configuration
+version: 2
+
+services:
+  api:
+    source: .
+    build:
+      command: pip install -r requirements.txt
+    start:
+      command: uvicorn api_backend:app --host 0.0.0.0 --port $PORT
+    variables:
+      PYTHON_VERSION: 3.11
+      PORT: 8000
