@@ -1,6 +1,6 @@
 # if you dont use pipenv uncomment the following:
-# from dotenv import load_dotenv
-# load_dotenv()
+from dotenv import load_dotenv
+load_dotenv()
 
 #VoiceBot UI with Gradio
 import os
@@ -22,36 +22,72 @@ system_prompt="""You have to act as a professional doctor, i know you are not bu
 
 
 def process_inputs(audio_filepath, image_filepath):
-    speech_to_text_output = transcribe_with_groq(GROQ_API_KEY=os.environ.get("GROQ_API_KEY"), 
-                                                 audio_filepath=audio_filepath,
-                                                 stt_model="whisper-large-v3")
+    # Check if GROQ_API_KEY is available
+    groq_api_key = os.environ.get("GROQ_API_KEY")
+    if not groq_api_key:
+        return "Error: GROQ_API_KEY not found in environment variables", "Please set your GROQ_API_KEY in the .env file", None
+    
+    # Check if audio file exists
+    if not audio_filepath:
+        return "No audio provided", "Please record some audio first", None
+    
+    print(f"Audio file path: {audio_filepath}")
+    print(f"Audio file exists: {os.path.exists(audio_filepath) if audio_filepath else 'No path'}")
+    
+    try:
+        speech_to_text_output = transcribe_with_groq(GROQ_API_KEY=groq_api_key, 
+                                                     audio_filepath=audio_filepath,
+                                                     stt_model="whisper-large-v3")
+        print(f"Speech to text output: {speech_to_text_output}")
+    except Exception as e:
+        print(f"Transcription error: {str(e)}")
+        return f"Error in speech transcription: {str(e)}", "Speech to text failed", None
 
     # Handle the image input
     if image_filepath:
-        doctor_response = analyze_image_with_query(query=system_prompt+speech_to_text_output, encoded_image=encode_image(image_filepath), model="meta-llama/llama-4-scout-17b-16e-instruct") #model="meta-llama/llama-4-maverick-17b-128e-instruct") 
+        try:
+            doctor_response = analyze_image_with_query(query=system_prompt+speech_to_text_output, encoded_image=encode_image(image_filepath), model="meta-llama/llama-4-scout-17b-16e-instruct") #model="meta-llama/llama-4-maverick-17b-128e-instruct") 
+        except Exception as e:
+            doctor_response = f"Error analyzing image: {str(e)}"
     else:
         doctor_response = "No image provided for me to analyze"
 
-    voice_of_doctor = text_to_speech_with_elevenlabs(input_text=doctor_response, output_filepath="final.mp3") 
+    try:
+        voice_of_doctor = text_to_speech_with_elevenlabs(input_text=doctor_response, output_filepath="final.mp3") 
+    except Exception as e:
+        voice_of_doctor = None
+        print(f"Error generating voice: {str(e)}")
 
     return speech_to_text_output, doctor_response, voice_of_doctor
 
 
-# Create the interface
-iface = gr.Interface(
-    fn=process_inputs,
-    inputs=[
-        gr.Audio(sources=["microphone"], type="filepath"),
-        gr.Image(type="filepath")
-    ],
-    outputs=[
-        gr.Textbox(label="Speech to Text"),
-        gr.Textbox(label="Doctor's Response"),
-        gr.Audio("Temp.mp3")
-    ],
-    title="AI Doctor with Vision and Voice"
-)
+# Create the interface with better configuration
+with gr.Blocks(title="AI Doctor with Vision and Voice") as iface:
+    gr.Markdown("# AI Doctor with Vision and Voice")
+    gr.Markdown("Record your voice describing symptoms and upload a medical image for analysis")
+    
+    with gr.Row():
+        with gr.Column():
+            audio_input = gr.Audio(
+                sources=["microphone"], 
+                type="filepath", 
+                label="Record your voice",
+                format="wav"
+            )
+            image_input = gr.Image(type="filepath", label="Upload medical image")
+            submit_btn = gr.Button("Analyze", variant="primary")
+        
+        with gr.Column():
+            speech_output = gr.Textbox(label="Speech to Text", interactive=False)
+            doctor_response = gr.Textbox(label="Doctor's Response", interactive=False)
+            audio_output = gr.Audio(label="Doctor's Voice")
+    
+    submit_btn.click(
+        fn=process_inputs,
+        inputs=[audio_input, image_input],
+        outputs=[speech_output, doctor_response, audio_output]
+    )
 
-iface.launch(debug=True)
+iface.launch(debug=True, share=True)
 
 #http://127.0.0.1:7860

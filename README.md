@@ -1,154 +1,152 @@
-# Project Setup Guide
+# 🩺 Predicare VoiceBot - AI Doctor with Voice & Vision
 
-This guide provides step-by-step instructions to set up your project environment, including the installation of FFmpeg and PortAudio across macOS, Linux, and Windows, as well as setting up a Python virtual environment using Pipenv, pip, or conda.
+An AI-powered medical assistant that combines voice recognition, image analysis, and text-to-speech to provide medical guidance through natural conversation.
 
-## Table of Contents
+![AI Doctor Demo](https://img.shields.io/badge/Status-Working-brightgreen)
+![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
+![Gradio](https://img.shields.io/badge/Gradio-UI-orange)
 
-1. [Installing FFmpeg and PortAudio](#installing-ffmpeg-and-portaudio)
-   - [macOS](#macos)
-   - [Linux](#linux)
-   - [Windows](#windows)
-2. [Setting Up a Python Virtual Environment](#setting-up-a-python-virtual-environment)
-   - [Using Pipenv](#using-pipenv)
-   - [Using pip and venv](#using-pip-and-venv)
-   - [Using Conda](#using-conda)
-3. [Running the application](#project-phases-and-python-commands)
+## 🌟 Features
 
-## Installing FFmpeg and PortAudio
+- 🎤 **Voice Input**: Record symptoms and medical concerns
+- 🧠 **AI Analysis**: Intelligent medical assessment using Groq LLM
+- 📸 **Image Analysis**: Upload medical images for visual diagnosis
+- 🔊 **Voice Output**: AI doctor responds with natural speech
+- 🌐 **Web Interface**: User-friendly Gradio web application
+- 📱 **Cross-Platform**: Works on any device with internet access
 
-### macOS
+## 🚀 Quick Start
 
-1. **Install Homebrew** (if not already installed):
+### Prerequisites
 
-   ```bash
-   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-   ```
+- Python 3.8+
+- GROQ API Key
+- ElevenLabs API Key
 
-2. **Install FFmpeg and PortAudio:**
+### Installation
 
-   ```bash
-   brew install ffmpeg portaudio
-   ```
-
-
-### Linux
-For Debian-based distributions (e.g., Ubuntu):
-
-1. **Update the package list**
-
-```
-sudo apt update
+1. Clone the repository:
+```bash
+git clone git@github.com:Pratik00531/Predicare-VoiceBot.git
+cd Predicare-VoiceBot
 ```
 
-2. **Install FFmpeg and PortAudio:**
-```
-sudo apt install ffmpeg portaudio19-dev
-```
-
-### Windows
-
-#### Download FFmpeg:
-1. Visit the official FFmpeg download page: [FFmpeg Downloads](https://ffmpeg.org/download.html)
-2. Navigate to the Windows builds section and download the latest static build.
-
-#### Extract and Set Up FFmpeg:
-1. Extract the downloaded ZIP file to a folder (e.g., `C:\ffmpeg`).
-2. Add the `bin` directory to your system's PATH:
-   - Search for "Environment Variables" in the Start menu.
-   - Click on "Edit the system environment variables."
-   - In the System Properties window, click on "Environment Variables."
-   - Under "System variables," select the "Path" variable and click "Edit."
-   - Click "New" and add the path to the `bin` directory (e.g., `C:\ffmpeg\bin`).
-   - Click "OK" to apply the changes.
-
-#### Install PortAudio:
-1. Download the PortAudio binaries from the official website: [PortAudio Downloads](http://www.portaudio.com/download.html)
-2. Follow the installation instructions provided on the website.
-
----
-
-## Setting Up a Python Virtual Environment
-
-### Using Pipenv
-1. **Install Pipenv (if not already installed):**  
-```
-pip install pipenv
-```
-
-2. **Install Dependencies with Pipenv:** 
-
-```
-pipenv install
-```
-
-3. **Activate the Virtual Environment:** 
-
-```
-pipenv shell
-```
-
----
-
-### Using `pip` and `venv`
-#### Create a Virtual Environment:
-```
-python -m venv venv
-```
-
-#### Activate the Virtual Environment:
-**macOS/Linux:**
-```
-source venv/bin/activate
-```
-
-**Windows:**
-```
-venv\Scripts\activate
-```
-
-#### Install Dependencies:
-```
+2. Install dependencies:
+```bash
 pip install -r requirements.txt
 ```
 
+3. Set up environment variables:
+```bash
+cp .env.example .env
+# Edit .env with your API keys
+```
+
+4. Run the application:
+```bash
+python gradio_app_simple.py
+```
+
+## 🔧 Configuration
+
+Create a `.env` file with the following:
+
+```env
+GROQ_API_KEY=your_groq_api_key_here
+ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
+```
+
+## 📁 Project Structure
+
+```
+├── brain_of_the_doctor.py     # Image analysis and AI reasoning
+├── voice_of_the_patient.py    # Speech-to-text processing
+├── voice_of_the_doctor.py     # Text-to-speech generation
+├── gradio_app_simple.py       # Main web application (recommended)
+├── gradio_app_optimized.py    # Alternative optimized version
+├── gradio_app.py              # Original version
+├── requirements.txt           # Python dependencies
+├── .env                       # API keys (not in repo)
+└── README.md                  # This file
+```
+
+## 🎯 How It Works
+
+1. **Record Symptoms**: User describes their medical concerns via voice
+2. **Transcription**: Speech is converted to text using Groq Whisper
+3. **AI Analysis**: Text is analyzed by LLM for medical assessment
+4. **Image Processing**: Optional image upload for visual analysis
+5. **Response Generation**: AI provides medical guidance and recommendations
+6. **Voice Output**: Response is converted back to speech using ElevenLabs
+
+## 🛡️ Important Disclaimers
+
+⚠️ **This application is for educational purposes only**
+- Not a substitute for professional medical advice
+- Always consult qualified healthcare professionals
+- Do not use for emergency medical situations
+
+## 🧪 Technology Stack
+
+- **AI/ML**: Groq LLM, Whisper (Speech-to-Text)
+- **Voice**: ElevenLabs Text-to-Speech
+- **Frontend**: Gradio Web UI
+- **Backend**: Python
+- **APIs**: RESTful API integration
+
+## 📊 API Usage
+
+### Speech-to-Text
+```python
+from voice_of_the_patient import transcribe_with_groq
+
+result = transcribe_with_groq(
+    audio_filepath="recording.wav",
+    GROQ_API_KEY="your_key",
+    stt_model="whisper-large-v3"
+)
+```
+
+### Medical Analysis
+```python
+from brain_of_the_doctor import analyze_image_with_query
+
+response = analyze_image_with_query(
+    query="What do you see in this image?",
+    model="llama-3.1-8b-instant",
+    encoded_image=base64_image
+)
+```
+
+### Text-to-Speech
+```python
+from voice_of_the_doctor import text_to_speech_with_elevenlabs
+
+audio_file = text_to_speech_with_elevenlabs(
+    input_text="Your medical assessment...",
+    output_filepath="response.mp3"
+)
+```
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is licensed under the MIT License.
+
+## 🙏 Acknowledgments
+
+- [Groq](https://groq.com/) for AI/ML infrastructure
+- [ElevenLabs](https://elevenlabs.io/) for voice synthesis
+- [Gradio](https://gradio.app/) for the web interface
+- Open source medical AI research community
+
 ---
 
-### Using Conda
-#### Create a Conda Environment:
-```
-conda create --name myenv python=3.11
-```
-
-#### Activate the Conda Environment:
-```
-conda activate myenv
-```
-
-#### Install Dependencies:
-```
-pip install -r requirements.txt
-```
-
-
-# Project Phases and Python Commands
-
-## Phase 1: Brain of the doctor
-```
-python brain_of_the_doctor.py
-```
-
-## Phase 2: Voice of the patient
-```
-python voice_of_the_patient.py
-```
-
-## Phase 3: Voice of the doctor
-```
-python voice_of_the_doctor.py
-```
-
-## Phase 4: Setup Gradio UI
-```
-python gradio_app.py
-```
-
+**Made with ❤️ for educational healthcare AI**

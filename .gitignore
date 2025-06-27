@@ -1,0 +1,56 @@
+# Environment variables
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual environment
+.venv/
+venv/
+env/
+ENV/
+
+# Audio files (generated during runtime)
+*.mp3
+*.wav
+!README.md
+
+# Temporary files
+temp/
+tmp/
+*.tmp
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Pipenv
+Pipfile.lock
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# PyTorch
+*.pth
+
+# Model files
+models/
+checkpoints/
